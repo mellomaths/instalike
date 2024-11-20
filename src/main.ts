@@ -5,6 +5,8 @@ import { PostDAOMemory } from "./posts/data/PostDAOMemory";
 import { CreatePost } from "./posts/CreatePost";
 import { GetPost } from "./posts/GetPost";
 import { SearchPost } from "./posts/SearchPost";
+import { DeletePost } from "./posts/DeletePost";
+import { ClearPosts } from "./posts/ClearPosts";
 
 const app = express();
 app.use(express.json());
@@ -31,14 +33,31 @@ app.get("/posts/:id", async (req, res) => {
 
 app.post("/posts", async (req, res) => {
   const service = new CreatePost(dao);
-  await service.execute(req.body);
-  res.status(201).send();
+  const post_id = await service.execute(req.body);
+  res.status(201).json({ post_id });
 });
 
 app.get("/posts/search/:keyword", async (req, res) => {
   const service = new SearchPost(dao);
   const output = await service.execute(req.params.keyword);
   res.status(200).json(output);
+});
+
+app.delete("/posts/:id", async (req, res) => {
+  const id = req.params.id;
+  const service = new DeletePost(dao);
+  try {
+    await service.execute(id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+
+app.delete("/posts", async (req, res) => {
+  const service = new ClearPosts(dao);
+  await service.execute();
+  res.status(204).send();
 });
 
 const PORT = 3000;

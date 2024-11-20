@@ -23,4 +23,12 @@ export class PostDAOMemory implements PostDAO {
       post.description.toLowerCase().includes(keyword)
     );
   }
+
+  async deletePost(uuid: string): Promise<void> {
+    this.posts = this.posts.filter((post) => post.uuid !== uuid);
+  }
+
+  async clearPosts(): Promise<void> {
+    this.posts = [];
+  }
 }

@@ -8,12 +8,17 @@ axios.defaults.validateStatus = function () {
 
 describe("PostController", () => {
   let random_post: Post;
+  let random_post_id: string;
 
   beforeEach(() => {
     random_post = {
       description: faker.lorem.sentence(),
       image: faker.image.urlPicsumPhotos(),
     };
+  });
+
+  afterEach(() => {
+    axios.delete(`http://localhost:3000/posts/${random_post_id}`);
   });
 
   describe("GET /posts", () => {
@@ -23,6 +28,8 @@ describe("PostController", () => {
         random_post
       );
       expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
 
       response = await axios.get("http://localhost:3000/posts");
       expect(response.status).toBe(200);
@@ -39,6 +46,8 @@ describe("PostController", () => {
         random_post
       );
       expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
 
       response = await axios.get("http://localhost:3000/posts");
       expect(response.status).toBe(200);
@@ -65,6 +74,8 @@ describe("PostController", () => {
         random_post
       );
       expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
     });
   });
 
@@ -76,6 +87,8 @@ describe("PostController", () => {
       };
       let response = await axios.post("http://localhost:3000/posts", post);
       expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
 
       response = await axios.get("http://localhost:3000/posts");
       expect(response.status).toBe(200);
