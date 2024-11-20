@@ -18,6 +18,9 @@ export class PostDAOMemory implements PostDAO {
   }
 
   async searchPost(keyword: string): Promise<Post[]> {
-    return this.posts.filter((post) => post.description.includes(keyword));
+    keyword = keyword.toLowerCase();
+    return this.posts.filter((post) =>
+      post.description.toLowerCase().includes(keyword)
+    );
   }
 }
