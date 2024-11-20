@@ -2,32 +2,27 @@
   "name": "instalike",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
-  "license": "AGPL-version-3.0",
-  "private": false,
-  "engines": {
-    "node": ">= 14.0.0",
-    "npm": ">= 6.0.0"
-  },
-  "homepage": "",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
-  "bugs": "",
-  "keywords": [],
-  "author": {
-    "name": "Matheus Mello de Lima",
-    "email": "mellomatheuslima@gmail.com",
-    "url": "https://mellomaths.com"
-  },
-  "contributors": [],
   "scripts": {
-    "dev": "node server.js",
-    "test": ""
+    "build": "tsc",
+    "main": "tsc && node ./dist/src/main.js",
+    "dev": "nodemon src/main.ts",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.2.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
   }
 }
