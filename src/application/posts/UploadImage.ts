@@ -22,17 +22,11 @@ export class UploadImage {
     filePath: string
   ): Promise<{ url: string; tag: string }> {
     const post = await this.postsRepository?.getPost(post_id);
-    console.log("Uploading image", post_id, originalFilename, filePath);
     if (!post) {
       throw new ApplicationException(404, {}, "Post not found");
     }
 
     const bucket = "posts";
-    const input = {
-      id: post_id,
-      name: originalFilename,
-      data: Buffer.from(filePath, "base64"),
-    };
     const extension = originalFilename.split(".").pop();
     const imageId = crypto.randomUUID();
     const newFilename = `${imageId}.${extension}`;
