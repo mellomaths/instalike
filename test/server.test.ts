@@ -11,14 +11,11 @@ describe("PostController", () => {
   let random_post_id: string;
 
   beforeEach(() => {
+    axios.delete(`http://localhost:3000/posts`);
     random_post = {
       description: faker.lorem.sentence(),
       image: faker.image.urlPicsumPhotos(),
     };
-  });
-
-  afterEach(() => {
-    axios.delete(`http://localhost:3000/posts/${random_post_id}`);
   });
 
   describe("GET /posts", () => {
@@ -61,7 +58,7 @@ describe("PostController", () => {
     });
 
     it("should return a 404 status", async () => {
-      const id = "invalid-id";
+      const id = crypto.randomUUID();
       const response = await axios.get(`http://localhost:3000/posts/${id}`);
       expect(response.status).toBe(404);
     });
@@ -101,6 +98,46 @@ describe("PostController", () => {
       expect(response.data[0].uuid).toBeDefined();
       expect(response.data[0].description).toBe(post.description);
       expect(response.data[0].image).toBe(post.image);
+    });
+  });
+
+  describe("DELETE /posts/:id", () => {
+    it("should return a 204 status", async () => {
+      let response = await axios.post(
+        "http://localhost:3000/posts",
+        random_post
+      );
+      expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
+
+      response = await axios.delete(
+        `http://localhost:3000/posts/${random_post_id}`
+      );
+      expect(response.status).toBe(204);
+
+      response = await axios.get("http://localhost:3000/posts");
+      expect(response.status).toBe(200);
+      expect(response.data.length).toBe(0);
+    });
+  });
+
+  describe("DELETE /posts", () => {
+    it("should return a 204 status", async () => {
+      let response = await axios.post(
+        "http://localhost:3000/posts",
+        random_post
+      );
+      expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
+
+      response = await axios.delete(`http://localhost:3000/posts`);
+      expect(response.status).toBe(204);
+
+      response = await axios.get("http://localhost:3000/posts");
+      expect(response.status).toBe(200);
+      expect(response.data.length).toBe(0);
     });
   });
 });

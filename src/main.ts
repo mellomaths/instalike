@@ -7,12 +7,19 @@ import { GetPost } from "./posts/GetPost";
 import { SearchPost } from "./posts/SearchPost";
 import { DeletePost } from "./posts/DeletePost";
 import { ClearPosts } from "./posts/ClearPosts";
+import { PostDAOMongo } from "./posts/data/PostDAOMongo";
+import { MongoConfig } from "./infra/database/mongo";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const dao = new PostDAOMemory();
+const dao = new PostDAOMongo(
+  new MongoConfig(
+    process.env.MONGO_URL as string,
+    process.env.MONGO_DB as string
+  )
+);
 
 app.get("/posts", async (req, res) => {
   const service = new ListPosts(dao);
@@ -60,7 +67,7 @@ app.delete("/posts", async (req, res) => {
   res.status(204).send();
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);
 });
