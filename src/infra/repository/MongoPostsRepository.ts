@@ -1,27 +1,31 @@
-import { Collection, Document, ObjectId } from "mongodb";
-import { MongoConfig } from "../../infra/database/mongo";
-import { Post } from "../Post";
-import { PostDAO } from "./PostDAO";
+import { Post } from "../../application/posts/Post";
+import { DatabaseConnection } from "../database/DatabaseConnection";
+import { Inject } from "../di/DependencyInjection";
+import { PostsRepository } from "./PostsRepository";
 
-export class PostDAOMongo implements PostDAO {
-  constructor(private readonly config: MongoConfig) {
-    this.config.connect();
+export class MongoPostsRepository implements PostsRepository {
+  @Inject("Database")
+  database?: DatabaseConnection;
+
+  constructor() {
+    this.database?.connect();
   }
+
   async listPosts(): Promise<Post[]> {
-    const posts = this.config.getCollection("posts");
+    const posts = this.database?.getConnection().collection("posts");
     const result = await posts.find().toArray();
-    return result.map((post) => ({
+    return result.map((post: any) => ({
       uuid: post.uuid,
       description: post.description,
       image: post.image,
     }));
   }
   async savePost(post: Post): Promise<void> {
-    const posts = this.config.getCollection("posts");
+    const posts = this.database?.getConnection().collection("posts");
     await posts.insertOne(post);
   }
   async getPost(uuid: string): Promise<Post | undefined> {
-    const posts = this.config.getCollection("posts");
+    const posts = this.database?.getConnection().collection("posts");
     const result = await posts.findOne({ uuid });
     if (!result) {
       return undefined;
@@ -34,24 +38,24 @@ export class PostDAOMongo implements PostDAO {
     };
   }
   async searchPost(keyword: string): Promise<Post[]> {
-    const posts = this.config.getCollection("posts");
+    const posts = this.database?.getConnection().collection("posts");
     const result = await posts
       .find({
         description: { $regex: keyword, $options: "i" },
       })
       .toArray();
-    return result.map((post) => ({
+    return result.map((post: any) => ({
       uuid: post.uuid,
       description: post.description,
       image: post.image,
     }));
   }
   async deletePost(uuid: string): Promise<void> {
-    const posts = this.config.getCollection("posts");
+    const posts = this.database?.getConnection().collection("posts");
     await posts.deleteOne({ uuid });
   }
   async clearPosts(): Promise<void> {
-    const posts = this.config.getCollection("posts");
+    const posts = this.database?.getConnection().collection("posts");
     await posts.deleteMany({});
   }
 }

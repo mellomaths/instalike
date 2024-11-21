@@ -1,73 +1,33 @@
-import express from "express";
-import cors from "cors";
-import { ListPosts } from "./posts/ListPosts";
-import { PostDAOMemory } from "./posts/data/PostDAOMemory";
-import { CreatePost } from "./posts/CreatePost";
-import { GetPost } from "./posts/GetPost";
-import { SearchPost } from "./posts/SearchPost";
-import { DeletePost } from "./posts/DeletePost";
-import { ClearPosts } from "./posts/ClearPosts";
-import { PostDAOMongo } from "./posts/data/PostDAOMongo";
-import { MongoConfig } from "./infra/database/mongo";
+import { ClearPosts } from "./application/posts/ClearPosts";
+import { CreatePost } from "./application/posts/CreatePost";
+import { DeletePost } from "./application/posts/DeletePost";
+import { GetPost } from "./application/posts/GetPost";
+import { ListPosts } from "./application/posts/ListPosts";
+import { SearchPost } from "./application/posts/SearchPost";
+import { PostController } from "./infra/controller/PostController";
+import { MongoAdapter } from "./infra/database/MongoAdapter";
+import { Registry } from "./infra/di/DependencyInjection";
+import { ExpressAdapter } from "./infra/http/ExpressAdapter";
+import { ConsoleLogger } from "./infra/logger/ConsoleLogger";
+import { WinstonLogger } from "./infra/logger/WinstonLogger";
+import { MemoryPostsRepository } from "./infra/repository/MemoryPostsRepository";
+import { MongoPostsRepository } from "./infra/repository/MongoPostsRepository";
+import { Settings } from "./infra/settings/Settings";
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-const dao = new PostDAOMongo(
-  new MongoConfig(
-    process.env.MONGO_URL as string,
-    process.env.MONGO_DB as string
-  )
-);
-
-app.get("/posts", async (req, res) => {
-  const service = new ListPosts(dao);
-  const output = await service.execute();
-  res.status(200).json(output);
-});
-
-app.get("/posts/:id", async (req, res) => {
-  const id = req.params.id;
-  const service = new GetPost(dao);
-  try {
-    const output = await service.execute(id);
-    res.status(200).json(output);
-  } catch (error) {
-    res.status(404).send();
-  }
-});
-
-app.post("/posts", async (req, res) => {
-  const service = new CreatePost(dao);
-  const post_id = await service.execute(req.body);
-  res.status(201).json({ post_id });
-});
-
-app.get("/posts/search/:keyword", async (req, res) => {
-  const service = new SearchPost(dao);
-  const output = await service.execute(req.params.keyword);
-  res.status(200).json(output);
-});
-
-app.delete("/posts/:id", async (req, res) => {
-  const id = req.params.id;
-  const service = new DeletePost(dao);
-  try {
-    await service.execute(id);
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send();
-  }
-});
-
-app.delete("/posts", async (req, res) => {
-  const service = new ClearPosts(dao);
-  await service.execute();
-  res.status(204).send();
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}...`);
-});
+const httpServer = new ExpressAdapter();
+const settings = new Settings();
+Registry.getInstance().provide("HttpServer", httpServer);
+Registry.getInstance().provide("Settings", settings);
+Registry.getInstance().provide("Logger", new WinstonLogger());
+// Registry.getInstance().provide("Logger", new ConsoleLogger());
+Registry.getInstance().provide("Database", new MongoAdapter());
+Registry.getInstance().provide("PostsRepository", new MongoPostsRepository());
+// Registry.getInstance().provide("PostsRepository", new MemoryPostsRepository());
+Registry.getInstance().provide("CreatePost", new CreatePost());
+Registry.getInstance().provide("ClearPosts", new ClearPosts());
+Registry.getInstance().provide("DeletePost", new DeletePost());
+Registry.getInstance().provide("GetPost", new GetPost());
+Registry.getInstance().provide("ListPosts", new ListPosts());
+Registry.getInstance().provide("SearchPost", new SearchPost());
+Registry.getInstance().provide("PostController", new PostController());
+httpServer.listen(settings.port);

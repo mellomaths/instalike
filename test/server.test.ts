@@ -1,6 +1,6 @@
 import axios from "axios";
 import { faker } from "@faker-js/faker";
-import { Post } from "../src/posts/Post";
+import { Post } from "../src/application/posts/Post";
 
 axios.defaults.validateStatus = function () {
   return true;
@@ -29,6 +29,7 @@ describe("PostController", () => {
       random_post_id = response.data.post_id;
 
       response = await axios.get("http://localhost:3000/posts");
+      console.log(response.data);
       expect(response.status).toBe(200);
       expect(response.data[0].uuid).toBeDefined();
       expect(response.data[0].description).toBe(random_post.description);

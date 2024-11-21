@@ -1,7 +1,12 @@
-import { Post } from "../Post";
-import { PostDAO } from "./PostDAO";
+import { Post } from "../../application/posts/Post";
+import { Inject } from "../di/DependencyInjection";
+import { Logger } from "../logger/Logger";
+import { PostsRepository } from "./PostsRepository";
 
-export class PostDAOMemory implements PostDAO {
+export class MemoryPostsRepository implements PostsRepository {
+  @Inject("Logger")
+  logger?: Logger;
+
   private posts: Post[] = [];
 
   async listPosts(): Promise<Post[]> {
@@ -29,6 +34,7 @@ export class PostDAOMemory implements PostDAO {
   }
 
   async clearPosts(): Promise<void> {
+    this.logger?.debug("Clearing posts");
     this.posts = [];
   }
 }
