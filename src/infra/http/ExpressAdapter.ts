@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+import multer from "multer";
 import cors from "cors";
 import { HttpServer } from "./HttpServer";
 import { WinstonLogger } from "../logger/WinstonLogger";
@@ -7,19 +8,36 @@ import { Settings } from "../settings/Settings";
 
 export class ExpressAdapter implements HttpServer {
   app: any;
+  upload: any;
 
   constructor() {
     this.app = express();
     this.app.use(express.json());
     this.app.use(cors());
+
+    const storage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, "uploads/");
+      },
+      filename: function (req, file, cb) {
+        cb(null, file.originalname);
+      },
+    });
+
+    this.upload = multer({ storage });
   }
 
-  register(method: string, url: string, callback: Function): void {
-    this.app[method](url, async function (req: Request, res: Response) {
+  register(
+    method: string,
+    url: string,
+    callback: Function,
+    isUpload: boolean = false
+  ): void {
+    const handler = async (req: Request, res: Response) => {
       const logger = new WinstonLogger();
       const settings = new Settings();
       try {
-        const output = await callback(req.params, req.body);
+        const output = await callback(req.params, req.body, req.file);
         if (method === "delete") {
           return res.status(204).json(output);
         }
@@ -39,7 +57,13 @@ export class ExpressAdapter implements HttpServer {
         }
         res.status(500).json(output);
       }
-    });
+    };
+
+    if (isUpload) {
+      this.app[method](url, this.upload.single("file"), handler);
+      return;
+    }
+    this.app[method](url, handler);
   }
 
   listen(port: number): void {

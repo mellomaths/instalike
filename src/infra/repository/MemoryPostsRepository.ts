@@ -37,4 +37,8 @@ export class MemoryPostsRepository implements PostsRepository {
     this.logger?.debug("Clearing posts");
     this.posts = [];
   }
+
+  async updatePost(post: Post): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 }

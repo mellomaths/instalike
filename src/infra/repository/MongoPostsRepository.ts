@@ -58,4 +58,9 @@ export class MongoPostsRepository implements PostsRepository {
     const posts = this.database?.getConnection().collection("posts");
     await posts.deleteMany({});
   }
+
+  async updatePost(post: Post): Promise<void> {
+    const posts = this.database?.getConnection().collection("posts");
+    await posts.updateOne({ uuid: post.uuid }, { $set: post });
+  }
 }

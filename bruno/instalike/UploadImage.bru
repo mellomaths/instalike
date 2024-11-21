@@ -1,0 +1,15 @@
+meta {
+  name: UploadImage
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:3000/posts/{id}/image/upload
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(C:\Users\mello\OneDrive\Imagens\wallpaperflare.com_wallpaper (2).jpg)
+}

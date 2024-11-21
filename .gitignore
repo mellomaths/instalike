@@ -131,3 +131,6 @@ dist
 
 # docker volumes
 .docker/
+
+# uploaded images
+uploads/

@@ -4,6 +4,7 @@ import { DeletePost } from "../../application/posts/DeletePost";
 import { GetPost } from "../../application/posts/GetPost";
 import { ListPosts } from "../../application/posts/ListPosts";
 import { SearchPost } from "../../application/posts/SearchPost";
+import { UploadImage } from "../../application/posts/UploadImage";
 import { Inject } from "../di/DependencyInjection";
 import { HttpServer } from "../http/HttpServer";
 
@@ -28,6 +29,9 @@ export class PostController {
 
   @Inject("ClearPosts")
   clearPosts?: ClearPosts;
+
+  @Inject("UploadImage")
+  uploadImage?: UploadImage;
 
   constructor() {
     this.httpServer?.register(
@@ -78,6 +82,27 @@ export class PostController {
         const output = await this.clearPosts?.execute();
         return output;
       }
+    );
+    this.httpServer?.register(
+      "post",
+      "/posts/upload",
+      async (params: any, body: any) => {
+        const output = await this.createPost?.execute(body);
+        return output;
+      }
+    );
+    this.httpServer?.register(
+      "post",
+      "/posts/:id/image/upload",
+      async (params: any, body: any, file: any) => {
+        const output = await this.uploadImage?.execute(
+          params.id,
+          file.originalname,
+          file.path
+        );
+        return output;
+      },
+      true
     );
   }
 }
