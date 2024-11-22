@@ -13,11 +13,13 @@ export class UpdatePost {
     }
 
     if (post.uuid !== existingPost.uuid) {
-      throw new ApplicationException(400, {}, "UUID cannot be updated");
+      const error = "UUID cannot be updated";
+      throw new ApplicationException(400, { message: error }, error);
     }
 
     if (post.image !== existingPost.image) {
-      throw new ApplicationException(400, {}, "Image cannot be updated");
+      const error = "Image cannot be updated";
+      throw new ApplicationException(400, { message: error }, error);
     }
 
     const updatedPost = await this.postsRepository?.updatePost(uuid, post);

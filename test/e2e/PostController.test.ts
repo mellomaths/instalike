@@ -176,4 +176,28 @@ describe("PostController", () => {
       expect(response.data.image).toBe(url);
     });
   });
+
+  describe("PUT /posts/:id", () => {
+    it("should return a 200 status and data", async () => {
+      let response = await axios.post(
+        "http://localhost:3000/posts",
+        random_post
+      );
+      expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
+
+      const update_post = random_post;
+      update_post.uuid = random_post_id;
+      update_post.description = faker.lorem.sentence();
+      response = await axios.put(
+        `http://localhost:3000/posts/${random_post_id}`,
+        update_post
+      );
+      expect(response.status).toBe(200);
+      expect(response.data.uuid).toBe(random_post_id);
+      expect(response.data.description).toBe(update_post.description);
+      expect(response.data.image).toBe(random_post.image);
+    });
+  });
 });
