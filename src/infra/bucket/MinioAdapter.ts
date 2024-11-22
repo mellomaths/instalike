@@ -29,8 +29,9 @@ export class MinioAdapter implements ObjectStorage {
       await this.client.makeBucket(bucket);
     }
 
-    const object = await this.client.fPutObject(bucket, key, filePath);
-    return object.etag;
+    await this.client.fPutObject(bucket, key, filePath);
+    const url = await this.client.presignedPutObject(bucket, key);
+    return url.split("?")[0];
   }
 
   close(): Promise<void> {
