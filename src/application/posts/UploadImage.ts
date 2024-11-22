@@ -20,7 +20,7 @@ export class UploadImage {
     post_id: string,
     originalFilename: string,
     filePath: string
-  ): Promise<{ url: string; tag: string }> {
+  ): Promise<{ url: string }> {
     const post = await this.postsRepository?.getPost(post_id);
     if (!post) {
       throw new ApplicationException(404, {}, "Post not found");
@@ -32,11 +32,11 @@ export class UploadImage {
     const newFilename = `${imageId}.${extension}`;
     const newFilePath = `uploads/${newFilename}`;
     fs.renameSync(filePath, newFilePath);
-    this.postsRepository?.updatePost({ ...post, image: newFilename });
     const key = `${post_id}/${newFilename}`;
-    const tag = await this.objectStorage?.put(bucket, key, newFilePath);
+    const url = await this.objectStorage?.put(bucket, key, newFilePath);
+    this.postsRepository?.updatePost({ ...post, image: url! });
     fs.unlinkSync(newFilePath);
-    return { url: key, tag: tag as string };
+    return { url: url! };
   }
 }
 

@@ -1,6 +1,8 @@
+import fs from "fs";
 import axios from "axios";
+import FormData from "form-data";
 import { faker } from "@faker-js/faker";
-import { Post } from "../src/application/posts/Post";
+import { Post } from "../../src/application/posts/Post";
 
 axios.defaults.validateStatus = function () {
   return true;
@@ -138,6 +140,40 @@ describe("PostController", () => {
       response = await axios.get("http://localhost:3000/posts");
       expect(response.status).toBe(200);
       expect(response.data.length).toBe(0);
+    });
+  });
+
+  describe("POST /posts/:id/image/upload", () => {
+    it("should return a 201 status and data", async () => {
+      let response = await axios.post(
+        "http://localhost:3000/posts",
+        random_post
+      );
+      expect(response.status).toBe(201);
+      expect(response.data.post_id).toBeDefined();
+      random_post_id = response.data.post_id;
+
+      const filePath = `${__dirname}/assets/upload_image_test.jpg`;
+      const formData = new FormData();
+      const file = fs.createReadStream(filePath);
+      formData.append("file", file);
+      response = await axios.post(
+        `http://localhost:3000/posts/${random_post_id}/image/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": `multipart/form-data`,
+          },
+        }
+      );
+      expect(response.status).toBe(201);
+      expect(response.data.url).toBeDefined();
+      const url = response.data.url;
+      response = await axios.get(
+        `http://localhost:3000/posts/${random_post_id}`
+      );
+      expect(response.status).toBe(200);
+      expect(response.data.image).toBe(url);
     });
   });
 });
