@@ -2,7 +2,6 @@ import fs from "fs";
 import { ObjectStorage } from "../../infra/bucket/ObjectStorage";
 import { Inject } from "../../infra/di/DependencyInjection";
 import { ApplicationException } from "../../infra/exception/ApplicationException";
-import { PostsRepository } from "../../infra/repository/PostsRepository";
 import { Settings } from "../../infra/settings/Settings";
 import { Post } from "./Post";
 
@@ -11,10 +10,7 @@ export class UploadImage {
   objectStorage?: ObjectStorage;
 
   @Inject("PostsRepository")
-  postsRepository?: PostsRepository;
-
-  @Inject("Settings")
-  settings?: Settings;
+  postsRepository?: UploadImageRepository;
 
   async execute(
     post_id: string,
@@ -34,7 +30,7 @@ export class UploadImage {
     fs.renameSync(filePath, newFilePath);
     const key = `${post_id}/${newFilename}`;
     const url = await this.objectStorage?.put(bucket, key, newFilePath);
-    this.postsRepository?.updatePost({ ...post, image: url! });
+    this.postsRepository?.updatePost(post.uuid!, { ...post, image: url! });
     fs.unlinkSync(newFilePath);
     return { url: url! };
   }
@@ -42,5 +38,5 @@ export class UploadImage {
 
 export interface UploadImageRepository {
   getPost(uuid: string): Promise<Post | undefined>;
-  updatePost(post: Post): Promise<void>;
+  updatePost(uuid: string, post: Post): Promise<Post>;
 }

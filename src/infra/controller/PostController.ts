@@ -4,6 +4,7 @@ import { DeletePost } from "../../application/posts/DeletePost";
 import { GetPost } from "../../application/posts/GetPost";
 import { ListPosts } from "../../application/posts/ListPosts";
 import { SearchPost } from "../../application/posts/SearchPost";
+import { UpdatePost } from "../../application/posts/UpdatePost";
 import { UploadImage } from "../../application/posts/UploadImage";
 import { Inject } from "../di/DependencyInjection";
 import { HttpServer } from "../http/HttpServer";
@@ -32,6 +33,9 @@ export class PostController {
 
   @Inject("UploadImage")
   uploadImage?: UploadImage;
+
+  @Inject("UpdatePost")
+  updatePost?: UpdatePost;
 
   constructor() {
     this.httpServer?.register(
@@ -103,6 +107,14 @@ export class PostController {
         return output;
       },
       true
+    );
+    this.httpServer?.register(
+      "put",
+      "/posts/:id",
+      async (params: any, body: any) => {
+        const output = await this.updatePost?.execute(params.id, body);
+        return output;
+      }
     );
   }
 }

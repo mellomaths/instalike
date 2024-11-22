@@ -1,0 +1,19 @@
+meta {
+  name: UpdatePost
+  type: http
+  seq: 9
+}
+
+put {
+  url: http://localhost:3000/posts/ddada6f8-6e1d-4085-9cbe-607056860dc7
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "uuid": "ddada6f8-6e1d-4085-9cbe-607056860dc7",
+      "description": "Spiderman",
+      "image": "http://localhost:9000/posts/ddada6f8-6e1d-4085-9cbe-607056860dc7/dcace752-4724-4bd1-875a-d72fc3fa5356.jpg"
+    }
+}

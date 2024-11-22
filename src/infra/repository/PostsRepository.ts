@@ -4,6 +4,7 @@ import { DeletePostRepository } from "../../application/posts/DeletePost";
 import { GetPostRepository } from "../../application/posts/GetPost";
 import { ListPostsRepository } from "../../application/posts/ListPosts";
 import { SearchPostRepository } from "../../application/posts/SearchPost";
+import { UpdatePostRepository } from "../../application/posts/UpdatePost";
 import { UploadImageRepository } from "../../application/posts/UploadImage";
 
 export interface PostsRepository
@@ -13,4 +14,5 @@ export interface PostsRepository
     SearchPostRepository,
     DeletePostRepository,
     ClearPostsRepository,
-    UploadImageRepository {}
+    UploadImageRepository,
+    UpdatePostRepository {}
