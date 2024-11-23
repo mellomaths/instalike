@@ -5,8 +5,6 @@ export class SearchPost {
   @Inject("PostsRepository")
   postsRepository?: SearchPostRepository;
 
-  constructor() {}
-
   async execute(keyword: string): Promise<Post[]> {
     const posts = this.postsRepository?.searchPost(keyword);
     return posts || [];

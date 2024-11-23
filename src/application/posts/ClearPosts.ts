@@ -4,8 +4,6 @@ export class ClearPosts {
   @Inject("PostsRepository")
   postsRepository?: ClearPostsRepository;
 
-  constructor() {}
-
   async execute(): Promise<void> {
     await this.postsRepository?.clearPosts();
   }

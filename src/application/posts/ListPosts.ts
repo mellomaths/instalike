@@ -5,8 +5,6 @@ export class ListPosts {
   @Inject("PostsRepository")
   postsRepository?: ListPostsRepository;
 
-  constructor() {}
-
   async execute(): Promise<Post[]> {
     const posts = this.postsRepository?.listPosts();
     return posts || [];

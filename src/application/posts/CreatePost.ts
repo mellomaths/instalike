@@ -5,8 +5,6 @@ export class CreatePost {
   @Inject("PostsRepository")
   postsRepository?: CreatePostRepository;
 
-  constructor() {}
-
   async execute(post: Post): Promise<{ post_id: string }> {
     post.uuid = crypto.randomUUID();
     await this.postsRepository?.savePost(post);

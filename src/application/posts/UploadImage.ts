@@ -2,7 +2,6 @@ import fs from "fs";
 import { ObjectStorage } from "../../infra/bucket/ObjectStorage";
 import { Inject } from "../../infra/di/DependencyInjection";
 import { ApplicationException } from "../../infra/exception/ApplicationException";
-import { Settings } from "../../infra/settings/Settings";
 import { Post } from "./Post";
 
 export class UploadImage {

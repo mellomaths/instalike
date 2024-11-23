@@ -6,8 +6,6 @@ export class GetPost {
   @Inject("PostsRepository")
   postsRepository?: GetPostRepository;
 
-  constructor() {}
-
   async execute(uuid: string): Promise<Post> {
     const post = await this.postsRepository?.getPost(uuid);
     if (!post) {

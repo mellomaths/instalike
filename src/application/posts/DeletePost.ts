@@ -5,8 +5,6 @@ export class DeletePost {
   @Inject("PostsRepository")
   postsRepository?: DeletePostRepository;
 
-  constructor() {}
-
   async execute(uuid: string): Promise<boolean> {
     const post = await this.postsRepository?.getPost(uuid);
     if (!post) {

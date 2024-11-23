@@ -38,7 +38,12 @@ export class MemoryPostsRepository implements PostsRepository {
     this.posts = [];
   }
 
-  async updatePost(post: Post): Promise<void> {
-    throw new Error("Method not implemented.");
+  async updatePost(uuid: string, post: Post): Promise<Post> {
+    const index = this.posts.findIndex((p) => p.uuid === uuid);
+    if (index === -1) {
+      throw new Error("Post not found.");
+    }
+    this.posts[index] = post;
+    return post;
   }
 }
